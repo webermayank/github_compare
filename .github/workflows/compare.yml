@@ -1,0 +1,38 @@
+name: Compare Files
+
+on:
+  push:
+    paths:
+      - "english.txt"
+      - "spanish.txt"
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run File Comparison
+        id: compare
+        run: |
+          result=$(node server.js)
+          echo "$result"
+          echo "::set-output name=result::$result"
+
+      # Optional: Send Slack Notification if a change is detected
+    #   - name: Notify Slack
+    #     if: contains(steps.compare.outputs.result, 'Change detected')
+    #     uses: appleboy/slack-action@master
+    #     with:
+    #       slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+    #       message: "English file has changes. Please update the corresponding translation in the other language file."
